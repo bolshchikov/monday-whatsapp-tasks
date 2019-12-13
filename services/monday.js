@@ -8,7 +8,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 const createTask = (taskName, boardId, groupId) => {
   return axios.post(ENDPOINT, {
-    query: `mutation {create_item (board_id: ${boardId}, group_id: ${groupId}, item_name: ${taskName}) {id} }`
+    query: `mutation {create_item(board_id: ${boardId}, group_id: "${groupId}", item_name: "${taskName}") {id} }`
   });
 };
 
