@@ -10,6 +10,8 @@ class MessagesQueue {
     }
     this.queue.push(message);
     this.messageIds[messageId] = true;
+    console.log(`new message in queue: ${messageId}`);
+    console.log(`queue length is ${this.queue.length}`);
   }
   process() {
     const message = this.queue.shift();
@@ -18,6 +20,7 @@ class MessagesQueue {
     }
     const messageId = message['MessageSid'];
     this.messageIds[messageId] = undefined;
+    console.log(`message ${messageId} is being processed`);
     return message;
   }
 }

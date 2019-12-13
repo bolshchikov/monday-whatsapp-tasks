@@ -15,7 +15,9 @@ const parseMessageBody = (message) => {
 }
 
 const createTask = async (message) => {
+  console.log('creating new task');
   const messageBody = parseMessageBody(message);
+  console.log(messageBody);
   const { status } = await monday.createTask(
     messageBody.title,
     PERSONAL_TASKS_BOARD_ID,
