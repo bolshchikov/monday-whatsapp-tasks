@@ -6,8 +6,8 @@ const MONDAY_AUTH_TOKEN = process.env.MONDAY_AUTH_TOKEN;
 axios.defaults.headers.common['Authorization'] = MONDAY_AUTH_TOKEN;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const createTask = (taskName, boardId, groupId) => {
-  const { status, data } = axios.post(ENDPOINT, {
+const createTask = async (taskName, boardId, groupId) => {
+  const { status, data } = await axios.post(ENDPOINT, {
     query: `mutation {create_item(board_id: ${boardId}, group_id: "${groupId}", item_name: "${taskName}") {id} }`
   });
   if (status !== 200) {
