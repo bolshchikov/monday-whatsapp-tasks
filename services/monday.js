@@ -7,9 +7,25 @@ axios.defaults.headers.common['Authorization'] = MONDAY_AUTH_TOKEN;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 const createTask = (taskName, boardId, groupId) => {
-  return axios.post(ENDPOINT, {
+  const { status, data } = axios.post(ENDPOINT, {
     query: `mutation {create_item(board_id: ${boardId}, group_id: "${groupId}", item_name: "${taskName}") {id} }`
   });
+  if (status !== 200) {
+    return {
+      success: false,
+      body: 'Something went wrong'
+    }
+  }
+  if (data['errors']) {
+    return {
+      success: false,
+      body: data['errors'][0].message
+    }
+  }
+  return {
+    success: true,
+    body: data['data']['create_item']['id']
+  }
 };
 
 module.exports = {

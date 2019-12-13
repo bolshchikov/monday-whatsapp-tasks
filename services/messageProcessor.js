@@ -19,24 +19,23 @@ const createTask = async (message) => {
   console.log('creating new task');
   const messageBody = parseMessageBody(message);
   console.log(messageBody);
-  const { status, data } = await monday.createTask(
+  const { success, body } = await monday.createTask(
     messageBody.title,
     PERSONAL_TASKS_BOARD_ID,
     GROUP_ID
   );
   console.log(data);
-  if (status === 200) {
-    twilio.reply(message, "Done");
+  if (success) {
+    twilio.reply(message, `*Done*:\n${body}`);
   } else {
-    twilio.reply(message, "Something went wrong");
+    twilio.reply(message, `*Error*:\n${body}`);
   }
-
 };
 
 const process = (message) => {
   const { action } = parseMessageBody(message);
-  switch (action) {
-    case 'Create task':
+  switch (action.toLowerCase()) {
+    case 'new task':
       createTask(message);
       break;
     default:
