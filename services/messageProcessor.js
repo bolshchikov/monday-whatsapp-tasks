@@ -1,7 +1,7 @@
 const monday = require('./monday');
 const twilio = require('./twilio');
 
-const PERSONAL_TASKS_BOARD_ID = '154509005';
+const PERSONAL_TASKS_BOARD_ID = 154509005;
 const GROUP_ID = 'Personal';
 
 const parseMessageBody = (message) => {
@@ -19,12 +19,13 @@ const createTask = async (message) => {
   console.log('creating new task');
   const messageBody = parseMessageBody(message);
   console.log(messageBody);
-  const { status } = await monday.createTask(
+  const response = await monday.createTask(
     messageBody.title,
     PERSONAL_TASKS_BOARD_ID,
     GROUP_ID
   );
-  if (status === 200) {
+  console.log(response);
+  if (response.status === 200) {
     twilio.reply(message, "Done");
   } else {
     twilio.reply(message, "Something went wrong");
