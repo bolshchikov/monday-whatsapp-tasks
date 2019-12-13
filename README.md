@@ -8,6 +8,14 @@ Later on you can edit, fill description, owner and prioritize it whenever there'
 
 ## Supported Functionality
 ### Create Task
+Send a message in the following format:
+```
+New task
+My task name
+[Board Name]
+[Group Id]
+```
+![](./docs/new_task.png)
 ### List tasks assigned to me
 ### List tasks assigned to me for today
 
