@@ -24,7 +24,7 @@ const createTask = async (message) => {
     PERSONAL_TASKS_BOARD_ID,
     GROUP_ID
   );
-  console.log(data);
+  console.log(body);
   if (success) {
     twilio.reply(message, `*Done*:\n${body}`);
   } else {
