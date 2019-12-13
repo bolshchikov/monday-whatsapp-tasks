@@ -6,8 +6,9 @@ const GROUP_ID = 'Personal';
 
 const parseMessageBody = (message) => {
   const body = message['Body'];
-  const [_, title, boardName, groupName] = body.split('\n');
+  const [action, title, boardName, groupName] = body.split('\n');
   return {
+    action,
     title,
     boardName,
     groupName
@@ -32,9 +33,9 @@ const createTask = async (message) => {
 };
 
 const process = (message) => {
-  const body = message['Body'];
-  switch (body) {
-    case body.startsWith('Create task'):
+  const { action } = parseMessageBody(message['Body']);
+  switch (action) {
+    case 'Create task':
       createTask(message);
       break;
     default:
