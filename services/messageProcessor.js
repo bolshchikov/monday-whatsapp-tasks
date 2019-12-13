@@ -33,7 +33,7 @@ const createTask = async (message) => {
 };
 
 const process = (message) => {
-  const { action } = parseMessageBody(message['Body']);
+  const { action } = parseMessageBody(message);
   switch (action) {
     case 'Create task':
       createTask(message);
