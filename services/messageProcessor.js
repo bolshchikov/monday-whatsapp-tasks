@@ -2,7 +2,11 @@ const monday = require('./monday');
 const twilio = require('./twilio');
 
 const PERSONAL_TASKS_BOARD_ID = 154509005;
-const GROUP_ID = 'Personal';
+const GROUP_ID = '';
+
+const ACTIONS = {
+  NEW_TASK: 'task'
+};
 
 const parseMessageBody = (message) => {
   const body = message['Body'];
@@ -13,7 +17,7 @@ const parseMessageBody = (message) => {
     boardName,
     groupName
   }
-}
+};
 
 const createTask = async (message) => {
   console.log('creating new task');
@@ -26,7 +30,7 @@ const createTask = async (message) => {
   );
   console.log(body);
   if (success) {
-    twilio.reply(message, `*Done*:\n${body}`);
+    twilio.reply(message, `Done`);
   } else {
     twilio.reply(message, `*Error*:\n${body}`);
   }
@@ -35,13 +39,13 @@ const createTask = async (message) => {
 const process = (message) => {
   const { action } = parseMessageBody(message);
   switch (action.toLowerCase()) {
-    case 'new task':
+    case ACTIONS.NEW_TASK:
       createTask(message);
       break;
     default:
+      twilio.reply(message, 'Action is not recognized.');
       break;
   }
-
 };
 
 module.exports = (queue) => {

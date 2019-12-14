@@ -7,12 +7,12 @@ Simply text your task to number, bot will add it to the relevant board. <br>
 Later on you can edit, fill description, owner and prioritize it whenever there's time for that.
 
 ## Supported Functionality
-### Create Task
+### Create New Task
 Send a message in the following format:
 ```
-New task
+Task
 My task name
-[Board Name]
+Board Name
 [Group Id]
 ```
 ![](./docs/new_task.png)
