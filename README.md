@@ -15,7 +15,7 @@ My task name
 Board Name
 [Group Id]
 ```
-![](./docs/new_task.png)
+
 ### List tasks assigned to me
 ### List tasks assigned to me for today
 
