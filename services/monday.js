@@ -12,13 +12,13 @@ const callMondayAPI = async (query) => {
     return {
       success: false,
       error: 'Something went wrong'
-    }
+    };
   }
   if (data['errors']) {
     return {
       success: false,
       error: data['errors'][0].message
-    }
+    };
   }
   return {
     success: true,
@@ -26,7 +26,7 @@ const callMondayAPI = async (query) => {
   };
 };
 
-const createTask = async (taskName, boardId, groupId) => {
+const createItem = async (taskName, boardId, groupId) => {
   const query = `
     mutation {
       create_item (board_id: ${boardId}, group_id: "${groupId}", item_name: "${taskName}") {
@@ -70,7 +70,7 @@ const getUserIdByEmail = async (email) => {
     return {
       success: false,
       error: 'No user with such email is found :('
-    }
+    };
   }
   return {
     success: true,
@@ -78,7 +78,78 @@ const getUserIdByEmail = async (email) => {
   };
 };
 
+const getAllItems = async () => {
+  const query = `
+    query {
+      boards {
+        items {
+          id,
+          name,
+          column_values {
+            id,
+            text,
+            value
+          }
+        }
+      }
+    }
+  `;
+  const { success, error, data } = await callMondayAPI(query);
+  if (!success) {
+    return {
+      success,
+      error
+    };
+  }
+  return data['boards'].reduce((acc, curr) => {
+    acc.push(...curr.items);
+    return acc;
+  }, []);
+};
+
+const filterUnfinishedItems = (items) => {
+  const res = [];
+  for (let item of items) {
+    for (let column of item.column_values) {
+      if (column.id === 'status') {
+        if (column.value === null) {
+          res.push(item);
+        }
+        break;
+      }
+    }
+  }
+  return res;
+};
+
+const filterItemsByUserId = (items, userId) => {
+  const res = [];
+  for (let item of items) {
+    for (let column of item.column_values) {
+      if (column.id === 'person') {
+        const val = JSON.parse(column.value);
+        if (val && val.id === userId) {
+          res.push(item);
+        }
+        break;
+      }
+    }
+  }
+  return res;
+};
+
+const getUserUnfinishedTasks = async (userId) => {
+  const items = await getAllItems();
+  const unfinishedItems = filterUnfinishedItems(items);
+  const userUnfinishedItems = filterItemsByUserId(unfinishedItems, userId);
+  return {
+    success: true,
+    tasks: userUnfinishedItems
+  };
+};
+
 module.exports = {
-  createTask,
-  getUserIdByEmail
+  createItem,
+  getUserIdByEmail,
+  getUserUnfinishedTasks
 };

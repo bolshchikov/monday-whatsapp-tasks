@@ -123,7 +123,7 @@
         "max-lines-per-function": "error",
         "max-nested-callbacks": "error",
         "max-params": "error",
-        "max-statements": ["error", 12],
+        "max-statements": ["error", 15],
         "max-statements-per-line": "error",
         "multiline-comment-style": [
             "error",
@@ -263,7 +263,7 @@
         "require-jsdoc": "error",
         "require-unicode-regexp": "error",
         "rest-spread-spacing": "error",
-        "semi": "off",
+        "semi": ["error", "always"],
         "semi-spacing": "error",
         "semi-style": [
             "error",

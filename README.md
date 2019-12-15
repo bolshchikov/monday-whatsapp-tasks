@@ -25,7 +25,14 @@ Task
 ```
 
 ### List tasks assigned to me
+Returns the list of all tasks assigned to you with unassigned status.
+```
+Tasks
+```
 ### List tasks assigned to me for today
-
+Returns the list of all tasks assigned to you with unassigned status where the deadline is today's date.
+```
+Tasks today
+```
 ## LICENSE
 [MIT](/LICENSE).
