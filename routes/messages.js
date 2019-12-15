@@ -2,11 +2,12 @@ const express = require('express');
 
 module.exports = (queue) => {
   const router = express.Router();
-  router.get('/', function (req, res, next) {
+
+  router.get('/', (req, res) => {
     res.send('OK');
   });
 
-  router.post('/', function (req, res) {
+  router.post('/', (req, res) => {
     const message = req.body;
     queue.push(message);
     res.end();
