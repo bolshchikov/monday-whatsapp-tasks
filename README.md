@@ -6,6 +6,8 @@ Whatsapp is a convenient conversational interface that can help to solve this is
 Simply text your task to number, bot will add it to the relevant board. <br>
 Later on you can edit, fill description, owner and prioritize it whenever there's time for that.
 
+![](./demo.gif)
+
 ## Supported Functionality
 
 ### Identify current phone number with Monday user by email
