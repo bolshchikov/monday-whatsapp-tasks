@@ -1,0 +1,13 @@
+{
+    "SmsMessageSid": "SM853c53a09149062431106b387997b119",
+    "NumMedia": "0",
+    "SmsSid": "SM853c53a09149062431106b387997b119",
+    "SmsStatus": "received",
+    "Body": "Email\nsergey@test.net",
+    "To": "whatsapp:+14155238886",
+    "NumSegments": "1",
+    "MessageSid": "SM853c53a09149062431106b387997b119",
+    "AccountSid": "AC14807fe233a4f16616d2ea805a9e46a8",
+    "From": "whatsapp:+972123456789",
+    "ApiVersion": "2010-04-01"
+}
