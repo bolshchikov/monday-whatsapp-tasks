@@ -74,6 +74,9 @@ const getUserUnfinishedTasks = async (message, isToday = false) => {
     console.log(mondayResponse.error);
     return twilio.reply(message, `*Error*:\n${mondayResponse.error}`);
   }
+  if (mondayResponse.success && mondayResponse.tasks.length === 0) {
+    return twilio.reply(message, 'Yayy! No unfinished tasks for you');
+  }
   const formattedMessage = mondayResponse.tasks.map(task => `◽ ${task.name}`).join('\n');
   return twilio.reply(message, formattedMessage);
 };

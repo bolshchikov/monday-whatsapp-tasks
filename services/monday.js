@@ -164,12 +164,12 @@ const getUserUnfinishedTasks = async (userId) => {
 };
 
 const getUserUnfinishedTasksToday = async (userId) => {
-  const fullDate = new Date(Date.now());
-  const today = `${fullDate.getFullYear()}-${fullDate.getUTCMonth()}-${fullDate.getUTCDate()}`;
+  const fullDate = new Date(Date.now()).toISOString();
+  const [date] = fullDate.split('T');
   const { tasks } = await getUserUnfinishedTasks(userId);
   return {
     success: true,
-    tasks: filterByDate(tasks, today)
+    tasks: filterByDate(tasks, date)
   };
 };
 
