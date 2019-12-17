@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon --exec 'node' ./bin/www"
+    "dev": "nodemon --exec 'node' ./bin/www",
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -19,6 +20,13 @@
   },
   "devDependencies": {
     "eslint": "^6.7.2",
-    "nodemon": "^2.0.2"
+    "jest": "^24.9.0",
+    "nock": "^11.7.0",
+    "nodemon": "^2.0.2",
+    "stoppable": "^1.1.0"
+  },
+  "jest": {
+    "globalSetup": "./tests/setup.js",
+    "globalTeardown": "./tests/teardown.js"
   }
 }

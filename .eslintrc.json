@@ -2,7 +2,8 @@
     "env": {
         "commonjs": true,
         "es6": true,
-        "node": true
+        "node": true,
+        "jest": true
     },
     "extends": "eslint:recommended",
     "globals": {
@@ -120,7 +121,7 @@
         "max-depth": "error",
         "max-len": "off",
         "max-lines": "error",
-        "max-lines-per-function": "error",
+        "max-lines-per-function": ["error", 100],
         "max-nested-callbacks": "error",
         "max-params": "error",
         "max-statements": ["error", 15],
