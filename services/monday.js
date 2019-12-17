@@ -138,6 +138,21 @@ const filterItemsByUserId = (items, userId) => {
   return res;
 };
 
+const filterByDate = (items, date) => {
+  const res = [];
+  for (let item of items) {
+    for (let column of item.column_values) {
+      if (column.id.startsWith('date')) {
+        if (column.text === date) {
+          res.push(item);
+        }
+        break;
+      }
+    }
+  }
+  return res;
+};
+
 const getUserUnfinishedTasks = async (userId) => {
   const items = await getAllItems();
   const unfinishedItems = filterUnfinishedItems(items);
@@ -148,8 +163,19 @@ const getUserUnfinishedTasks = async (userId) => {
   };
 };
 
+const getUserUnfinishedTasksToday = async (userId) => {
+  const fullDate = new Date(Date.now());
+  const today = `${fullDate.getFullYear()}-${fullDate.getUTCMonth()}-${fullDate.getUTCDate()}`;
+  const { tasks } = await getUserUnfinishedTasks(userId);
+  return {
+    success: true,
+    tasks: filterByDate(tasks, today)
+  };
+};
+
 module.exports = {
   createItem,
   getUserIdByEmail,
-  getUserUnfinishedTasks
+  getUserUnfinishedTasks,
+  getUserUnfinishedTasksToday
 };

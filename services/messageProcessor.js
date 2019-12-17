@@ -8,7 +8,8 @@ const GROUP_ID = '';
 const ACTIONS = {
   NEW_TASK: 'task',
   ASSOCIATE_WITH_EMAIL: 'email',
-  USER_UNFINISHED_TASKS: 'tasks'
+  USER_UNFINISHED_TASKS: 'tasks',
+  USER_UNFINISHED_TASKS_TODAY: 'tasks today'
 };
 
 const parseMessageBody = (message) => {
@@ -19,7 +20,7 @@ const parseMessageBody = (message) => {
     userInput,
     boardName,
     groupName
-  }
+  };
 };
 
 const createTask = async (message) => {
@@ -57,7 +58,7 @@ const associateEmail = async (message) => {
   return twilio.reply(message, `Done`);
 };
 
-const getUserUnfinishedTasks = async (message) => {
+const getUserUnfinishedTasks = async (message, isToday = false) => {
   console.log('Get user unfinished tasks');
   const from = message['From'];
   const dbResponse = await db.getUserId(from);
@@ -66,7 +67,9 @@ const getUserUnfinishedTasks = async (message) => {
     return twilio.reply(message, `*Error*:\n${dbResponse.error}`);
   }
   const userId = dbResponse.userId;
-  const mondayResponse = await monday.getUserUnfinishedTasks(userId);
+  const mondayResponse = isToday
+    ? await monday.getUserUnfinishedTasksToday(userId)
+    : await monday.getUserUnfinishedTasks(userId);
   if (!mondayResponse.success) {
     console.log(mondayResponse.error);
     return twilio.reply(message, `*Error*:\n${mondayResponse.error}`);
@@ -85,7 +88,10 @@ const process = (message) => {
       associateEmail(message);
       break;
     case ACTIONS.USER_UNFINISHED_TASKS:
-      getUserUnfinishedTasks(message);
+      getUserUnfinishedTasks(message, false);
+      break;
+    case ACTIONS.USER_UNFINISHED_TASKS_TODAY:
+      getUserUnfinishedTasks(message, true);
       break;
     default:
       twilio.reply(message, 'Action is not recognized.');
