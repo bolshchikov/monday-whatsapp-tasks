@@ -1,4 +1,4 @@
-# [Monday](https://monday.com) Whatsapp Task Manager
+# [Monday](https://monday.com) Whatsapp Task Manager [![Build Status](https://travis-ci.org/bolshchikov/monday-whatsapp-tasks.svg?branch=master)](https://travis-ci.org/bolshchikov/monday-whatsapp-tasks)
 
 ## Motivation
 Managing tasks in Monday is great. However, their mobile app is quite cumbersome. Especially, if you are on the go/meeting or in any other context, you don't have time to find the correct board and fill the item. <br>
