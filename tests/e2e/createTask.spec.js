@@ -1,3 +1,4 @@
+const nock = require('nock');
 const axios = require('axios');
 const TwilioDriver = require('../drivers/twilio');
 const MondayDriver = require('../drivers/monday');
@@ -37,7 +38,7 @@ describe('Create new task', () => {
     }, 600);
   });
 
-  test.skip('Assign created tasks if email exists', async (done) => {
+  test('Assign created tasks if email exists', async (done) => {
     const userId = 67890;
     mondayDriver.givenReply({
       users: [
@@ -48,14 +49,19 @@ describe('Create new task', () => {
         }
       ]
     });
-    const mondayCall = mondayDriver.givenReply({
+    mondayDriver.givenReply({
       'create_item': {
         id: 123456
       }
     });
+    mondayDriver.givenReply({
+      'change_column_value': {
+        id: "406324307"
+      }
+    });
 
     twilioDriver.whenCallingWith('Done');
-    const twilioReply = twilioDriver.whenCallingWith('Done');
+    twilioDriver.whenCallingWith('Done');
 
     const from = Math.random().toString();
     const createTaskMessage = new MessageBuilder();
@@ -68,14 +74,14 @@ describe('Create new task', () => {
 
     createTaskMessage
       .action(ACTIONS.NEW_TASK)
+      .body('Some new task')
       .from(from);
 
     await axios.post('http://localhost:3000/messages', associateEmailMessage.build());
     await axios.post('http://localhost:3000/messages', createTaskMessage.build());
 
     setTimeout(() => {
-      expect(mondayCall.isDone()).toBe(true);
-      expect(twilioReply.isDone()).toBe(true);
+      expect(nock.pendingMocks()).toEqual([]);
       done();
     }, 1400);
   });
