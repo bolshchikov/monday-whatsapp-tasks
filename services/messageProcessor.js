@@ -1,15 +1,9 @@
 const monday = require('./monday');
 const twilio = require('./twilio');
+const ACTIONS = require('../contants/actions');
 
 const PERSONAL_TASKS_BOARD_ID = 154509005;
 const GROUP_ID = '';
-
-const ACTIONS = {
-  NEW_TASK: 'task',
-  ASSOCIATE_WITH_EMAIL: 'email',
-  USER_UNFINISHED_TASKS: 'tasks',
-  USER_UNFINISHED_TASKS_TODAY: 'tasks today'
-};
 
 const parseMessageBody = (message) => {
   const body = message['Body'];
@@ -30,7 +24,7 @@ module.exports = (queue, dbClient) => {
     console.log('creating new task');
     const messageBody = parseMessageBody(message);
     console.log(messageBody);
-    const { success, error } = await monday.createItem(
+    const { success, error, id } = await monday.createItem(
       messageBody.userInput,
       PERSONAL_TASKS_BOARD_ID,
       GROUP_ID
@@ -38,6 +32,15 @@ module.exports = (queue, dbClient) => {
     if (!success) {
       console.log(error);
       return twilio.reply(message, `*Error*:\n${error}`);
+    }
+    const from = message['From'];
+    const { userId } = await db.getUserId(from);
+    if (userId) {
+      await monday.assignItem(
+        PERSONAL_TASKS_BOARD_ID,
+        id,
+        userId
+      );
     }
     return twilio.reply(message, `Done`);
   };

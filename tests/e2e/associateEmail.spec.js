@@ -1,35 +1,41 @@
-const nock = require('nock');
 const axios = require('axios');
-const associateEmailMessage = require('../fixtures/messages/associateEmail.json');
+const TwilioDriver = require('../drivers/twilio');
+const MondayDriver = require('../drivers/monday');
+const MessageBuilder = require('../builders/message');
+
+const ACTIONS = require('../../contants/actions');
+
+const users = [
+  {
+    id: 123456,
+    name: 'Vasya',
+    email: 'vasya@test.com'
+  },
+  {
+    id: 67890,
+    name: 'Sergey',
+    email: 'sergey@test.net'
+  }
+];
 
 describe('Associate user by email address', () => {
+  let mondayDriver, twilioDriver;
+
+  beforeEach(() => {
+    mondayDriver = new MondayDriver();
+    twilioDriver = new TwilioDriver();
+  });
+
   test('Successful action', async (done) => {
-    const mondayCall = nock('https://api.monday.com')
-      .post('/v2')
-      .reply(200, {
-        data: {
-          users: [
-            {
-              id: 123456,
-              name: 'Vasya',
-              email: 'vasya@test.com'
-            },
-            {
-              id: 67890,
-              name: 'Sergey',
-              email: 'sergey@test.net'
-            }
-          ]
-        }
-      });
+    const mondayCall = mondayDriver.givenReply({ users });
+    const twilioReply = twilioDriver.whenCallingWith('Done');
+    const message = new MessageBuilder();
+    message
+      .action(ACTIONS.ASSOCIATE_WITH_EMAIL)
+      .body('sergey@test.net')
+      .from(Math.random().toString());
 
-    const twilioReply = nock('https://api.twilio.com')
-      .post(
-        uri => uri.startsWith('/2010-04-01/Accounts'),
-        body => body.includes('Done'))
-      .reply(200, {});
-
-    await axios.post('http://localhost:3000/messages', associateEmailMessage);
+    await axios.post('http://localhost:3000/messages', message.build());
 
     setTimeout(() => {
       expect(mondayCall.isDone()).toBe(true);
@@ -39,32 +45,15 @@ describe('Associate user by email address', () => {
   });
 
   test('User provided wrong email', async (done) => {
-    const mondayCall = nock('https://api.monday.com')
-      .post('/v2')
-      .reply(200, {
-        data: {
-          users: [
-            {
-              id: 123456,
-              name: 'Vasya',
-              email: 'vasya@test.com'
-            },
-            {
-              id: 67890,
-              name: 'Sergey',
-              email: 'sergey@somewrongemailaddress.net'
-            }
-          ]
-        }
-      });
+    const mondayCall = mondayDriver.givenReply({ users });
+    const twilioReply = twilioDriver.whenCallingWith('No user with such email is found');
+    const message = new MessageBuilder();
+    message
+      .action(ACTIONS.ASSOCIATE_WITH_EMAIL)
+      .body('some@wrontemailaddress.com')
+      .from(Math.random().toString());
 
-    const twilioReply = nock('https://api.twilio.com')
-      .post(
-        uri => uri.startsWith('/2010-04-01/Accounts'),
-        body => body.includes('No user with such email is found'))
-      .reply(200, {});
-
-    await axios.post('http://localhost:3000/messages', associateEmailMessage);
+    await axios.post('http://localhost:3000/messages', message.build());
 
     setTimeout(() => {
       expect(mondayCall.isDone()).toBe(true);
