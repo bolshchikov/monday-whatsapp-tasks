@@ -181,6 +181,7 @@ const assignItem = (boardId, itemId, userId) => {
       }
     }
   `;
+  console.log(query);
   return callMondayAPI(query);
 };
 
