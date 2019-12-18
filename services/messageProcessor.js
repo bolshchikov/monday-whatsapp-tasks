@@ -36,11 +36,14 @@ module.exports = (queue, dbClient) => {
     const from = message['From'];
     const { userId } = await db.getUserId(from);
     if (userId) {
-      await monday.assignItem(
+      const assignUserResponse = await monday.assignItem(
         PERSONAL_TASKS_BOARD_ID,
         id,
         userId
       );
+      if (assignUserResponse.error) {
+        console.log(assignUserResponse.error);
+      }
     }
     return twilio.reply(message, `Done`);
   };
