@@ -6,8 +6,11 @@ const MONDAY_AUTH_TOKEN = process.env.MONDAY_AUTH_TOKEN;
 axios.defaults.headers.common['Authorization'] = MONDAY_AUTH_TOKEN;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const callMondayAPI = async (query) => {
-  const { status, data } = await axios.post(ENDPOINT, { query });
+const callMondayAPI = async (query, variables = null) => {
+  const { status, data } = await axios.post(ENDPOINT, {
+    variables,
+    query
+  });
   if (status !== 200) {
     return {
       success: false,
@@ -175,14 +178,16 @@ const getUserUnfinishedTasksToday = async (userId) => {
 
 const assignItem = (boardId, itemId, userId) => {
   const query = `
-    mutation {
-      change_column_value (board_id: ${boardId}, item_id: ${itemId}, column_id: "person", value: "${JSON.stringify({ id: userId })}") {
+    mutation change_column_value($userId: JSON!) {
+      change_column_value (board_id: ${boardId}, item_id: ${itemId}, column_id: "person", value: $userId) {
         id
       }
     }
   `;
-  console.log(query);
-  return callMondayAPI(query);
+  const variables = {
+    userId: JSON.stringify({ id: userId })
+  };
+  return callMondayAPI(query, variables);
 };
 
 module.exports = {
