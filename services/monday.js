@@ -136,6 +136,18 @@ const filterItemsByUserId = (items, userId) => {
         }
         break;
       }
+      if (column.id === 'people') {
+        const val = JSON.parse(column.value);
+        if (val && val['personsAndTeams'].length) {
+          for (let member of val['personsAndTeams']) {
+            if (member.id === userId) {
+              res.push(item);
+            }
+            break;
+          }
+        }
+        break;
+      }
     }
   }
   return res;
