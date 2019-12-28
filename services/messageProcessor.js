@@ -2,7 +2,7 @@ const monday = require('./monday');
 const twilio = require('./twilio');
 const ACTIONS = require('../contants/actions');
 
-const PERSONAL_TASKS_BOARD_ID = 154509005;
+const DEFAULT_BOARD_ID = 154509005;
 const GROUP_ID = '';
 
 const parseMessageBody = (message) => {
@@ -22,30 +22,42 @@ module.exports = (queue, dbClient) => {
 
   const createTask = async (message) => {
     console.log('creating new task');
-    const messageBody = parseMessageBody(message);
-    console.log(messageBody);
-    const { success, error, id } = await monday.createItem(
-      messageBody.userInput,
-      PERSONAL_TASKS_BOARD_ID,
-      GROUP_ID
-    );
-    if (!success) {
+    try {
+      let boardId = DEFAULT_BOARD_ID;
+      const messageBody = parseMessageBody(message);
+      console.log(messageBody);
+
+      if (messageBody && messageBody.boardName !== undefined) {
+        const boardIdResponse = await monday.getBoardIdByName(messageBody.boardName);
+        if (boardIdResponse.success) {
+          boardId = boardIdResponse.id;
+        } else {
+          throw new Error(boardIdResponse.error);
+        }
+      }
+      const { id } = await monday.createItem(
+        messageBody.userInput,
+        boardId,
+        GROUP_ID
+      );
+      const from = message['From'];
+      const { userId } = await db.getUserId(from);
+
+      if (userId) {
+        const assignUserResponse = await monday.assignItem(
+          boardId,
+          id,
+          userId
+        );
+        if (!assignUserResponse.success) {
+          throw new Error(assignUserResponse.error);
+        }
+      }
+      return twilio.reply(message, `Done`);
+    } catch (error) {
       console.log(error);
       return twilio.reply(message, `*Error*:\n${error}`);
     }
-    const from = message['From'];
-    const { userId } = await db.getUserId(from);
-    if (userId) {
-      const assignUserResponse = await monday.assignItem(
-        PERSONAL_TASKS_BOARD_ID,
-        id,
-        userId
-      );
-      if (assignUserResponse.error) {
-        console.log(assignUserResponse.error);
-      }
-    }
-    return twilio.reply(message, `Done`);
   };
 
   const associateEmail = async (message) => {

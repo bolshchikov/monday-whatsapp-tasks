@@ -202,10 +202,43 @@ const assignItem = (boardId, itemId, userId) => {
   return callMondayAPI(query, variables);
 };
 
+const getBoardIdByName = async (name) => {
+  const query = `
+    query {
+      boards {
+        id
+        name
+      }
+    }
+  `;
+  const { success, error, data } = await callMondayAPI(query);
+  if (!success) {
+    return {
+      success,
+      error
+    };
+  }
+
+  for (let board of data.boards) {
+    if (board.name === name) {
+      return {
+        success: true,
+        id: board.id
+      };
+    }
+  }
+
+  return {
+    success: false,
+    error: `No board with name ${name} is found`
+  };
+};
+
 module.exports = {
   createItem,
   assignItem,
   getUserIdByEmail,
+  getBoardIdByName,
   getUserUnfinishedTasks,
   getUserUnfinishedTasksToday
 };

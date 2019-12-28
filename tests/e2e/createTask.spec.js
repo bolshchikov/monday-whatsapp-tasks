@@ -15,13 +15,13 @@ describe('Create new task', () => {
   });
 
   test('Create a new task successfully', async (done) => {
-    const mondayCall = mondayDriver.givenReply({
+    mondayDriver.givenReply({
       'create_item': {
         id: 123456
       }
     });
 
-    const twilioReply = twilioDriver.whenCallingWith('Done');
+    twilioDriver.whenCallingWith('Done');
 
     const message = new MessageBuilder();
     message
@@ -32,8 +32,47 @@ describe('Create new task', () => {
     await axios.post('http://localhost:3000/messages', message.build());
 
     setTimeout(() => {
-      expect(mondayCall.isDone()).toBe(true);
-      expect(twilioReply.isDone()).toBe(true);
+      expect(nock.isDone()).toBe(true);
+      done();
+    }, 600);
+  });
+
+  test('Create a new task in a given board name', async (done) => {
+    mondayDriver.givenReply({
+      boards: [
+        {
+          id: 1,
+          name: 'My board 1'
+        },
+        {
+          id: 2,
+          name: 'My board 2'
+        },
+        {
+          id: 3,
+          name: 'My board 3'
+        }
+      ]
+    });
+
+    mondayDriver.givenReply({
+      'create_item': {
+        id: 123456
+      }
+    });
+
+    twilioDriver.whenCallingWith('Done');
+
+    const message = new MessageBuilder();
+    message
+      .action(ACTIONS.NEW_TASK)
+      .body('My new task\nMy board 1')
+      .from(Math.random().toString());
+
+    await axios.post('http://localhost:3000/messages', message.build());
+
+    setTimeout(() => {
+      expect(nock.isDone()).toBe(true);
       done();
     }, 600);
   });
