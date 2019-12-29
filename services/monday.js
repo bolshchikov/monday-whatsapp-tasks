@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { search } = require('./fuzzySearch');
 
 const ENDPOINT = 'https://api.monday.com/v2';
 const MONDAY_AUTH_TOKEN = process.env.MONDAY_AUTH_TOKEN;
@@ -219,13 +220,12 @@ const getBoardIdByName = async (name) => {
     };
   }
 
-  for (let board of data.boards) {
-    if (board.name === name) {
-      return {
-        success: true,
-        id: board.id
-      };
-    }
+  const maybeId = search(data.boards, name);
+  if (maybeId) {
+    return {
+      success: true,
+      id: maybeId
+    };
   }
 
   return {

@@ -64,9 +64,10 @@ describe('Create new task', () => {
     twilioDriver.whenCallingWith('Done');
 
     const message = new MessageBuilder();
+    const boardNameForFuzzySearch = 'my barod 1';
     message
       .action(ACTIONS.NEW_TASK)
-      .body('My new task\nMy board 1')
+      .body(`My new task\n${boardNameForFuzzySearch}`)
       .from(Math.random().toString());
 
     await axios.post('http://localhost:3000/messages', message.build());
