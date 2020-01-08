@@ -9,7 +9,7 @@ module.exports = (queue) => {
 
   router.post('/', (req, res) => {
     const message = req.body;
-    queue.push(message);
+    queue.add(message);
     res.end();
   });
 

@@ -1,18 +1,18 @@
-const createError = require('http-errors');
-const express = require('express');
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const express = require('express');
+const MessagesQueue = require('bull');
+const createError = require('http-errors');
+const cookieParser = require('cookie-parser');
 
 const indexRouter = require('./routes/index');
 const messagesRouter = require('./routes/messages');
 
-const MessagesQueue = require('./services/messagesQueue');
 const messageProcessor = require('./services/messageProcessor');
 
 module.exports = (dbClient) => {
   const app = express();
-  const queue = new MessagesQueue();
-  app.intervalId = messageProcessor(queue, dbClient);
+  const queue = new MessagesQueue('monday-whatsapp-messages', process.env.REDIS_URL);
+  messageProcessor(queue, dbClient);
 
   app.use(logger('dev'));
   app.use(express.json());
@@ -38,5 +38,6 @@ module.exports = (dbClient) => {
     res.render('error');
   });
 
+  app.queue = queue;
   return app;
 };

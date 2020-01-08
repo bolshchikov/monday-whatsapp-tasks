@@ -106,27 +106,20 @@ module.exports = (queue, dbClient) => {
     const { action } = parseMessageBody(message);
     switch (action.toLowerCase()) {
       case ACTIONS.NEW_TASK:
-        createTask(message);
-        break;
+        return createTask(message);
       case ACTIONS.ASSOCIATE_WITH_EMAIL:
-        associateEmail(message);
-        break;
+        return associateEmail(message);
       case ACTIONS.USER_UNFINISHED_TASKS:
-        getUserUnfinishedTasks(message, false);
-        break;
+        return getUserUnfinishedTasks(message, false);
       case ACTIONS.USER_UNFINISHED_TASKS_TODAY:
-        getUserUnfinishedTasks(message, true);
-        break;
+        return getUserUnfinishedTasks(message, true);
       default:
-        twilio.reply(message, 'Action is not recognized.');
-        break;
+        return twilio.reply(message, 'Action is not recognized.');
     }
   };
 
-  return setInterval(() => {
-    const maybeMessage = queue.process();
-    if (maybeMessage) {
-      process(maybeMessage);
-    }
-  }, 500);
+  queue.process((job) => {
+    const message = job.data;
+    return process(message);
+  });
 };
