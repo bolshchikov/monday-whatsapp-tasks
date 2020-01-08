@@ -2,7 +2,7 @@ require('dotenv').config();
 const http = require('http');
 const Redis = require('ioredis');
 const stoppable = require('stoppable');
-const appFactory = require('../dist/app');
+const appFactory = require('../dist/app').default;
 
 const redis = new Redis();
 const PORT = process.env.PORT || 3000;

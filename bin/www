@@ -2,7 +2,7 @@
 require('dotenv').config();
 const http = require('http');
 const Redis = require('ioredis');
-const appFactory = require('../dist/app');
+const appFactory = require('../dist/app').default;
 const debug = require('debug')('monday-whatapp-tasks:server');
 
 const redis = new Redis(process.env.REDIS_URL);

@@ -1,14 +1,14 @@
-const logger = require('morgan');
-const express = require('express');
-const MessagesQueue = require('bull');
-const createError = require('http-errors');
+import logger from 'morgan';
+import express, { Response } from 'express';
+import MessagesQueue from 'bull';
+import createError from 'http-errors';
 
-const indexRouter = require('./routes/index');
-const messagesRouter = require('./routes/messages');
+import indexRouter from './routes/index';
+import messagesRouter from './routes/messages';
 
-const messageProcessor = require('./services/messageProcessor');
+import messageProcessor from './services/messageProcessor';
 
-module.exports = (dbClient) => {
+export default dbClient => {
   const app = express();
   const queue = new MessagesQueue('monday-whatsapp-messages', process.env.REDIS_URL);
   messageProcessor(queue, dbClient);
@@ -25,17 +25,6 @@ module.exports = (dbClient) => {
     next(createError(404));
   });
 
-  // error handler
-  app.use((err, req, res) => {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-  });
-
-  app.queue = queue;
+  app['queue'] = queue;
   return app;
 };

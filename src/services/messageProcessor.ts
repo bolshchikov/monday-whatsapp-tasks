@@ -1,3 +1,4 @@
+import { Job } from 'bull';
 import { reply } from './twilio';
 import Message from '../types/Message';
 import ACTIONS from '../types/Actions';
@@ -17,8 +18,9 @@ const parseMessage = (payload: TwilioPayload): Message => {
   };
 };
 
-module.exports = (queue, dbClient) => {
-  const db = require('./db')(dbClient);
+export default async (queue, dbClient) => {
+  const { build } = await import('./db');
+  const db = build(dbClient);
 
   const createTask = createTaskImpl(db);
   const associateEmail = associateEmailImpl(db);
@@ -40,7 +42,7 @@ module.exports = (queue, dbClient) => {
     }
   };
 
-  queue.process((job) => {
+  queue.process((job: Job) => {
     const payload = job.data;
     return process(payload);
   });

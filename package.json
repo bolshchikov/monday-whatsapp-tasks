@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/bull": "^3.10.6",
     "@types/express": "^4.17.2",
     "eslint": "^6.7.2",
     "jest": "^24.9.0",
