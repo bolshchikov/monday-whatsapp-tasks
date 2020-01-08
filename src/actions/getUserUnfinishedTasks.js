@@ -1,0 +1,33 @@
+const twilio = require('../services/twilio');
+const monday = require('../services/monday');
+
+module.exports = db => async (payload, isToday = false) => {
+  console.log('Get user unfinished tasks');
+
+  const from = payload['From'];
+
+  const dbResponse = await db.getUserId(from);
+  if (!dbResponse.success) {
+    console.log(dbResponse.error);
+    return twilio.reply(payload, `*Error*:\n${dbResponse.error}`);
+  }
+
+  const userId = dbResponse.userId;
+
+  const mondayResponse = isToday
+    ? await monday.getUserUnfinishedTasksToday(userId)
+    : await monday.getUserUnfinishedTasks(userId);
+
+  if (!mondayResponse.success) {
+    console.log(mondayResponse.error);
+    return twilio.reply(payload, `*Error*:\n${mondayResponse.error}`);
+  }
+
+  if (mondayResponse.success && mondayResponse.tasks.length === 0) {
+    return twilio.reply(payload, 'Yayy! No unfinished tasks for you');
+  }
+
+  const formattedMessage = mondayResponse.tasks.map(task => `◽ ${task.name}`).join('\n');
+
+  return twilio.reply(payload, formattedMessage);
+};
