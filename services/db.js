@@ -1,5 +1,5 @@
 module.exports = (dbClient) => {
-  const setUserId = (phoneNumber, userId) => dbClient.set(phoneNumber, userId)
+  const setUserId = (phoneNumber, userId) => dbClient.set(`${phoneNumber}:userId`, userId)
     .then(
       res => ({ success: res === 'OK' }),
       error => ({
@@ -8,7 +8,7 @@ module.exports = (dbClient) => {
       })
     );
 
-  const getUserId = phoneNumber => dbClient.get(phoneNumber)
+  const getUserId = phoneNumber => dbClient.get(`${phoneNumber}:userId`)
     .then(
       (userId) => {
         if (userId === null) {
