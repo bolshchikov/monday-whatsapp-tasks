@@ -11,7 +11,8 @@ Later on you can edit, fill description, owner and prioritize it whenever there'
 ## How to use
 
 ### 0. Set user token
-In order to start working, you need to post your Personal API Token (V2). All calls to Monday API must be authenticated. **Nothing will work without it**.
+In order to start working, you need to post your Personal API Token (V2). All calls to Monday API must be authenticated. **Nothing will work without it**. <br />
+How to get the token? [Read here](https://monday.com/developers/v2#authentication-section-accessing-tokens).
 ```
 Token
 <Enter your Monday token here>
