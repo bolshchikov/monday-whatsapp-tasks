@@ -1,5 +1,5 @@
-const twilio = require('../services/twilio');
-const monday = require('../services/monday');
+import * as twilio from '../services/twilio';
+import * as monday from '../services/monday';
 
 module.exports = db => async (payload, message) => {
   console.log('Associating email with the user');

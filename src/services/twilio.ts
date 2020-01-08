@@ -1,8 +1,10 @@
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
-const client = require('twilio')(accountSid, authToken);
 
-const reply = (originalMessage, replyText) => {
+import twilio from 'twilio';
+const client = twilio(accountSid, authToken);
+
+export const reply = (originalMessage, replyText) => {
   const to = originalMessage['From'];
   const from = originalMessage['To'];
   return client.messages
@@ -11,10 +13,6 @@ const reply = (originalMessage, replyText) => {
       from,
       to
     })
-    .then(message => console.log(message.sid))
-    .done();
+    .then(message => console.log(message.sid));
 };
 
-module.exports = {
-  reply
-};

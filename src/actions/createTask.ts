@@ -1,5 +1,5 @@
-const twilio = require('../services/twilio');
-const monday = require('../services/monday');
+import * as twilio from '../services/twilio';
+import * as monday from '../services/monday';
 
 const DEFAULT_BOARD_ID = 154509005;
 const GROUP_ID = '';

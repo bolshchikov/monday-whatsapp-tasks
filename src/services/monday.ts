@@ -1,5 +1,5 @@
-const axios = require('axios');
-const { search } = require('./fuzzySearch');
+import axios from 'axios';
+import { search } from './fuzzySearch';
 
 const ENDPOINT = 'https://api.monday.com/v2';
 const MONDAY_AUTH_TOKEN = process.env.MONDAY_AUTH_TOKEN;
@@ -30,7 +30,7 @@ const callMondayAPI = async (query, variables = null) => {
   };
 };
 
-const createItem = async (taskName, boardId, groupId) => {
+export const createItem = async (taskName, boardId, groupId) => {
   const query = `
     mutation {
       create_item (board_id: ${boardId}, group_id: "${groupId}", item_name: "${taskName}") {
@@ -52,7 +52,7 @@ const createItem = async (taskName, boardId, groupId) => {
   };
 };
 
-const getUserIdByEmail = async (email) => {
+export const getUserIdByEmail = async (email) => {
   const query = `
     query {
       users (kind:non_guests) {
@@ -169,7 +169,7 @@ const filterByDate = (items, date) => {
   return res;
 };
 
-const getUserUnfinishedTasks = async (userId) => {
+export const getUserUnfinishedTasks = async (userId) => {
   const items = await getAllItems();
   const unfinishedItems = filterUnfinishedItems(items);
   const userUnfinishedItems = filterItemsByUserId(unfinishedItems, userId);
@@ -179,7 +179,7 @@ const getUserUnfinishedTasks = async (userId) => {
   };
 };
 
-const getUserUnfinishedTasksToday = async (userId) => {
+export const getUserUnfinishedTasksToday = async (userId) => {
   const fullDate = new Date(Date.now()).toISOString();
   const [date] = fullDate.split('T');
   const { tasks } = await getUserUnfinishedTasks(userId);
@@ -189,7 +189,7 @@ const getUserUnfinishedTasksToday = async (userId) => {
   };
 };
 
-const assignItem = (boardId, itemId, userId) => {
+export const assignItem = (boardId, itemId, userId) => {
   const query = `
     mutation change_column_value($userId: JSON!) {
       change_column_value (board_id: ${boardId}, item_id: ${itemId}, column_id: "person", value: $userId) {
@@ -203,7 +203,7 @@ const assignItem = (boardId, itemId, userId) => {
   return callMondayAPI(query, variables);
 };
 
-const getBoardIdByName = async (name) => {
+export const getBoardIdByName = async (name): Promise<{ success: boolean, error?: string, id?: number }> => {
   const query = `
     query {
       boards {
@@ -232,13 +232,4 @@ const getBoardIdByName = async (name) => {
     success: false,
     error: `No board with name ${name} is found`
   };
-};
-
-module.exports = {
-  createItem,
-  assignItem,
-  getUserIdByEmail,
-  getBoardIdByName,
-  getUserUnfinishedTasks,
-  getUserUnfinishedTasksToday
 };

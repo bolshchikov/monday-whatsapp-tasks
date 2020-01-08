@@ -1,4 +1,4 @@
-const Fuse = require('fuse.js');
+import Fuse from 'fuse.js';
 
 const options = {
   id: 'id',
@@ -12,12 +12,8 @@ const options = {
   keys: ['name']
 };
 
-const search = (haystack, needle) => {
+export const search = (haystack, needle) => {
   const fuse = new Fuse(haystack, options);
   const results = fuse.search(needle);
-  return results[0];
-};
-
-module.exports = {
-  search
+  return Number(results[0]);
 };
