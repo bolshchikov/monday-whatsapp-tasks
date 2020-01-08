@@ -2,7 +2,6 @@ const logger = require('morgan');
 const express = require('express');
 const MessagesQueue = require('bull');
 const createError = require('http-errors');
-const cookieParser = require('cookie-parser');
 
 const indexRouter = require('./routes/index');
 const messagesRouter = require('./routes/messages');
@@ -17,7 +16,6 @@ module.exports = (dbClient) => {
   app.use(logger('dev'));
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
 
   app.use('/', indexRouter);
   app.use('/messages', messagesRouter(queue));
