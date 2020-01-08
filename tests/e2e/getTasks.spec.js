@@ -6,6 +6,8 @@ const MessageBuilder = require('../builders/message');
 
 const ACTIONS = require('../../contants/actions');
 
+const TIMEOUT = 50;
+
 describe('Get tasks', () => {
   let mondayDriver, twilioDriver;
 
@@ -27,7 +29,7 @@ describe('Get tasks', () => {
     setTimeout(() => {
       expect(twilioReply.isDone()).toBe(true);
       done();
-    }, 600);
+    }, TIMEOUT);
   });
 
   describe('with associated user', () => {
@@ -53,7 +55,7 @@ describe('Get tasks', () => {
         .from(from);
 
       axios.post('http://localhost:3000/messages', associateEmailMessage.build());
-      setTimeout(done, 600);
+      setTimeout(done, TIMEOUT);
     });
 
     test('Get user assigned tasks successfully', (done) => {
@@ -94,7 +96,7 @@ describe('Get tasks', () => {
       setTimeout(() => {
         expect(nock.isDone()).toBe(true);
         done();
-      }, 600);
+      }, TIMEOUT);
     });
 
     test('Return tasks from people column', (done) => {
@@ -147,7 +149,7 @@ describe('Get tasks', () => {
       setTimeout(() => {
         expect(nock.isDone()).toBe(true);
         done();
-      }, 600);
+      }, TIMEOUT);
     });
   });
 

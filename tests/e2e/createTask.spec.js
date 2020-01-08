@@ -6,6 +6,8 @@ const MessageBuilder = require('../builders/message');
 
 const ACTIONS = require('../../contants/actions');
 
+const TIMEOUT = 50;
+
 describe('Create new task', () => {
   let mondayDriver, twilioDriver;
 
@@ -34,7 +36,7 @@ describe('Create new task', () => {
     setTimeout(() => {
       expect(nock.isDone()).toBe(true);
       done();
-    }, 600);
+    }, TIMEOUT);
   });
 
   test('Create a new task in a given board name', async (done) => {
@@ -75,7 +77,7 @@ describe('Create new task', () => {
     setTimeout(() => {
       expect(nock.isDone()).toBe(true);
       done();
-    }, 600);
+    }, TIMEOUT);
   });
 
   test('Assign created tasks if email exists', async (done) => {

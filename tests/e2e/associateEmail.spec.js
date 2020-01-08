@@ -5,6 +5,8 @@ const MessageBuilder = require('../builders/message');
 
 const ACTIONS = require('../../contants/actions');
 
+const TIMEOUT = 50;
+
 const users = [
   {
     id: 123456,
@@ -41,7 +43,7 @@ describe('Associate user by email address', () => {
       expect(mondayCall.isDone()).toBe(true);
       expect(twilioReply.isDone()).toBe(true);
       done();
-    }, 600);
+    }, TIMEOUT);
   });
 
   test('User provided wrong email', async (done) => {
@@ -59,6 +61,6 @@ describe('Associate user by email address', () => {
       expect(mondayCall.isDone()).toBe(true);
       expect(twilioReply.isDone()).toBe(true);
       done();
-    }, 600);
+    }, TIMEOUT);
   });
 });
