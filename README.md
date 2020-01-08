@@ -8,16 +8,16 @@ Later on you can edit, fill description, owner and prioritize it whenever there'
 
 ![](./demo.gif)
 
-## Supported Functionality
+## How to use
 
-### Identify current phone number with Monday user by email
+### 1. Identify current phone number with Monday user by email
 Associate your phone number with your user in Monday. Doing this allows you to assign tasks to your Monday user. Send a message in the following format:
 ```
 Email
 <Enter your Monday email address>
 ```
 
-### Create New Task
+### 2. Create New Task
 Create a new task by sending a message in the following format:
 ```
 Task
@@ -26,12 +26,12 @@ Task
 [Group Id]
 ```
 
-### List tasks assigned to me
+### 3. List tasks assigned to me
 Returns the list of all tasks assigned to you with unassigned status.
 ```
 Tasks
 ```
-### List tasks assigned to me for today
+### 4. List tasks assigned to me for today
 Returns the list of all tasks assigned to you with unassigned status where the deadline is today's date.
 ```
 Tasks today
