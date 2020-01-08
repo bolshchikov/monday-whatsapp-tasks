@@ -1,5 +1,6 @@
 const nock = require('nock');
 const axios = require('axios');
+const DBDriver = require('../drivers/db');
 const TwilioDriver = require('../drivers/twilio');
 const MondayDriver = require('../drivers/monday');
 const MessageBuilder = require('../builders/message');
@@ -9,12 +10,19 @@ const ACTIONS = require('../../dist/types/Actions').default;
 const TIMEOUT = 50;
 
 describe('Create new task', () => {
-  let mondayDriver, twilioDriver;
+  const from = '+123456789';
+  let mondayDriver, twilioDriver, dbDriver;
 
   beforeEach(() => {
+    dbDriver = new DBDriver();
     mondayDriver = new MondayDriver();
     twilioDriver = new TwilioDriver();
   });
+
+  beforeEach(async () => {
+    await dbDriver.setTokenFor(from);
+  });
+
 
   test('Create a new task successfully', async (done) => {
     mondayDriver.givenReply({
@@ -29,7 +37,7 @@ describe('Create new task', () => {
     message
       .action(ACTIONS.NEW_TASK)
       .body('My new task')
-      .from(Math.random().toString());
+      .from(`whatsapp:${from}`);
 
     await axios.post('http://localhost:3000/messages', message.build());
 
@@ -70,7 +78,7 @@ describe('Create new task', () => {
     message
       .action(ACTIONS.NEW_TASK)
       .body(`My new task\n${boardNameForFuzzySearch}`)
-      .from(Math.random().toString());
+      .from(`whatsapp:${from}`);
 
     await axios.post('http://localhost:3000/messages', message.build());
 
@@ -105,19 +113,18 @@ describe('Create new task', () => {
     twilioDriver.whenCallingWith('Done');
     twilioDriver.whenCallingWith('Done');
 
-    const from = Math.random().toString();
     const createTaskMessage = new MessageBuilder();
     const associateEmailMessage = new MessageBuilder();
 
     associateEmailMessage
       .action(ACTIONS.ASSOCIATE_WITH_EMAIL)
       .body('sergey@test.net')
-      .from(from);
+      .from(`whatsapp:${from}`);
 
     createTaskMessage
       .action(ACTIONS.NEW_TASK)
       .body('Some new task')
-      .from(from);
+      .from(`whatsapp:${from}`);
 
     await axios.post('http://localhost:3000/messages', associateEmailMessage.build());
     await axios.post('http://localhost:3000/messages', createTaskMessage.build());

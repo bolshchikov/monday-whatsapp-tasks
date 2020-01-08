@@ -2,7 +2,7 @@ import { reply } from '../services/twilio';
 import * as monday from '../services/monday';
 import TwilioPayload from '../types/TwilioPayload';
 
-export default db => async (payload: TwilioPayload, isToday = false) => {
+export default db => async (userToken: string, payload: TwilioPayload, isToday = false) => {
   console.log('Get user unfinished tasks');
 
   const from = payload['From'];
@@ -16,8 +16,8 @@ export default db => async (payload: TwilioPayload, isToday = false) => {
   const userId = dbResponse.userId;
 
   const mondayResponse = isToday
-    ? await monday.getUserUnfinishedTasksToday(userId)
-    : await monday.getUserUnfinishedTasks(userId);
+    ? await monday.getUserUnfinishedTasksToday(userToken, userId)
+    : await monday.getUserUnfinishedTasks(userToken, userId);
 
   if (mondayResponse.success && mondayResponse.tasks.length === 0) {
     return reply(payload, 'Yayy! You are all done for today!');

@@ -1,5 +1,6 @@
 const nock = require('nock');
 const axios = require('axios');
+const DBDriver = require('../drivers/db');
 const TwilioDriver = require('../drivers/twilio');
 const MondayDriver = require('../drivers/monday');
 const MessageBuilder = require('../builders/message');
@@ -9,19 +10,26 @@ const ACTIONS = require('../../dist/types/Actions').default;
 const TIMEOUT = 50;
 
 describe('Get tasks', () => {
-  let mondayDriver, twilioDriver;
+  const from = '+123456789';
+  let mondayDriver, twilioDriver, dbDriver;
 
   beforeEach(() => {
+    dbDriver = new DBDriver();
     mondayDriver = new MondayDriver();
     twilioDriver = new TwilioDriver();
   });
+
+  beforeEach(async () => {
+    await dbDriver.setTokenFor(from);
+  });
+
 
   test('Fail if user is not associated', async (done) => {
     const twilioReply = twilioDriver.whenCallingWith('No Monday user is associated with this phone number');
     const message = new MessageBuilder();
     message
       .action(ACTIONS.USER_UNFINISHED_TASKS)
-      .from(Math.random().toString());
+      .from(`whatsapp:${from}`);
 
 
     await axios.post('http://localhost:3000/messages', message.build());
@@ -34,9 +42,7 @@ describe('Get tasks', () => {
 
   describe('with associated user', () => {
     const userId = 67890;
-    let from;
     beforeEach((done) => {
-      from = Math.random().toString();
       mondayDriver.givenReply({
         users: [
           {
@@ -52,7 +58,7 @@ describe('Get tasks', () => {
       associateEmailMessage
         .action(ACTIONS.ASSOCIATE_WITH_EMAIL)
         .body('sergey@test.net')
-        .from(from);
+        .from(`whatsapp:${from}`);
 
       axios.post('http://localhost:3000/messages', associateEmailMessage.build());
       setTimeout(done, TIMEOUT);
@@ -89,7 +95,7 @@ describe('Get tasks', () => {
 
       getTasksMessage
         .action(ACTIONS.USER_UNFINISHED_TASKS)
-        .from(from);
+        .from(`whatsapp:${from}`);
 
       axios.post('http://localhost:3000/messages', getTasksMessage.build());
 
@@ -142,7 +148,7 @@ describe('Get tasks', () => {
 
       getTasksMessage
         .action(ACTIONS.USER_UNFINISHED_TASKS)
-        .from(from);
+        .from(`whatsapp:${from}`);
 
       axios.post('http://localhost:3000/messages', getTasksMessage.build());
 
@@ -152,6 +158,5 @@ describe('Get tasks', () => {
       }, TIMEOUT);
     });
   });
-
 
 });

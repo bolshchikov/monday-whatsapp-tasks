@@ -1,4 +1,5 @@
 enum ACTIONS {
+  MONDAY_TOKEN = 'token',
   NEW_TASK = 'task',
   ASSOCIATE_WITH_EMAIL = 'email',
   USER_UNFINISHED_TASKS = 'tasks',

@@ -1,4 +1,6 @@
+const nock = require('nock');
 const axios = require('axios');
+const DBDriver = require('../drivers/db');
 const TwilioDriver = require('../drivers/twilio');
 const MondayDriver = require('../drivers/monday');
 const MessageBuilder = require('../builders/message');
@@ -21,45 +23,51 @@ const users = [
 ];
 
 describe('Associate user by email address', () => {
-  let mondayDriver, twilioDriver;
+  const from = '+123456789';
+  let mondayDriver, twilioDriver, dbDriver;
 
   beforeEach(() => {
+    dbDriver = new DBDriver();
     mondayDriver = new MondayDriver();
     twilioDriver = new TwilioDriver();
   });
 
+  beforeEach(async () => {
+    await dbDriver.setTokenFor(from);
+  });
+
   test('Successful action', async (done) => {
-    const mondayCall = mondayDriver.givenReply({ users });
-    const twilioReply = twilioDriver.whenCallingWith('Done');
+    mondayDriver.givenReply({ users });
+    twilioDriver.whenCallingWith('Done');
+
     const message = new MessageBuilder();
     message
       .action(ACTIONS.ASSOCIATE_WITH_EMAIL)
       .body('sergey@test.net')
-      .from(Math.random().toString());
+      .from(`whatsapp:${from}`);
 
     await axios.post('http://localhost:3000/messages', message.build());
 
     setTimeout(() => {
-      expect(mondayCall.isDone()).toBe(true);
-      expect(twilioReply.isDone()).toBe(true);
+      expect(nock.isDone()).toBe(true);
       done();
     }, TIMEOUT);
   });
 
   test('User provided wrong email', async (done) => {
-    const mondayCall = mondayDriver.givenReply({ users });
-    const twilioReply = twilioDriver.whenCallingWith('No user with such email is found');
+    mondayDriver.givenReply({ users });
+    twilioDriver.whenCallingWith('No user with such email is found');
+
     const message = new MessageBuilder();
     message
       .action(ACTIONS.ASSOCIATE_WITH_EMAIL)
       .body('some@wrontemailaddress.com')
-      .from(Math.random().toString());
+      .from(`whatsapp:${from}`);
 
     await axios.post('http://localhost:3000/messages', message.build());
 
     setTimeout(() => {
-      expect(mondayCall.isDone()).toBe(true);
-      expect(twilioReply.isDone()).toBe(true);
+      expect(nock.isDone()).toBe(true);
       done();
     }, TIMEOUT);
   });

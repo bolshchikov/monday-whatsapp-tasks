@@ -2,15 +2,17 @@ import axios from 'axios';
 import { search } from './fuzzySearch';
 
 const ENDPOINT = 'https://api.monday.com/v2';
-const MONDAY_AUTH_TOKEN = process.env.MONDAY_AUTH_TOKEN;
 
-axios.defaults.headers.common['Authorization'] = MONDAY_AUTH_TOKEN;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const callMondayAPI = async (query, variables = null) => {
+const callMondayAPI = async (userToken: string, query: string, variables = null) => {
   const { status, data } = await axios.post(ENDPOINT, {
     variables,
     query
+  }, {
+    headers: {
+      'Authorization': userToken
+    }
   });
   if (status !== 200) {
     return {
@@ -30,7 +32,7 @@ const callMondayAPI = async (query, variables = null) => {
   };
 };
 
-export const createItem = async (taskName, boardId, groupId) => {
+export const createItem = async (userToken, taskName, boardId, groupId) => {
   const query = `
     mutation {
       create_item (board_id: ${boardId}, group_id: "${groupId}", item_name: "${taskName}") {
@@ -38,7 +40,7 @@ export const createItem = async (taskName, boardId, groupId) => {
       } 
     }
   `;
-  const { success, data, error } = await callMondayAPI(query);
+  const { success, data, error } = await callMondayAPI(userToken, query);
   if (!success) {
     return {
       success,
@@ -52,7 +54,7 @@ export const createItem = async (taskName, boardId, groupId) => {
   };
 };
 
-export const getUserIdByEmail = async (email) => {
+export const getUserIdByEmail = async (userToken, email) => {
   const query = `
     query {
       users (kind:non_guests) {
@@ -62,7 +64,7 @@ export const getUserIdByEmail = async (email) => {
       }
     }
   `;
-  const { success, data, error } = await callMondayAPI(query);
+  const { success, data, error } = await callMondayAPI(userToken, query);
   if (!success) {
     return {
       success,
@@ -82,7 +84,7 @@ export const getUserIdByEmail = async (email) => {
   };
 };
 
-const getAllItems = async () => {
+const getAllItems = async (userToken) => {
   const query = `
     query {
       boards {
@@ -98,7 +100,7 @@ const getAllItems = async () => {
       }
     }
   `;
-  const { success, error, data } = await callMondayAPI(query);
+  const { success, error, data } = await callMondayAPI(userToken, query);
   if (!success) {
     return {
       success,
@@ -169,8 +171,8 @@ const filterByDate = (items, date) => {
   return res;
 };
 
-export const getUserUnfinishedTasks = async (userId) => {
-  const items = await getAllItems();
+export const getUserUnfinishedTasks = async (userToken, userId) => {
+  const items = await getAllItems(userToken);
   const unfinishedItems = filterUnfinishedItems(items);
   const userUnfinishedItems = filterItemsByUserId(unfinishedItems, userId);
   return {
@@ -179,17 +181,17 @@ export const getUserUnfinishedTasks = async (userId) => {
   };
 };
 
-export const getUserUnfinishedTasksToday = async (userId) => {
+export const getUserUnfinishedTasksToday = async (userToken, userId) => {
   const fullDate = new Date(Date.now()).toISOString();
   const [date] = fullDate.split('T');
-  const { tasks } = await getUserUnfinishedTasks(userId);
+  const { tasks } = await getUserUnfinishedTasks(userToken, userId);
   return {
     success: true,
     tasks: filterByDate(tasks, date)
   };
 };
 
-export const assignItem = (boardId, itemId, userId) => {
+export const assignItem = (userToken, boardId, itemId, userId) => {
   const query = `
     mutation change_column_value($userId: JSON!) {
       change_column_value (board_id: ${boardId}, item_id: ${itemId}, column_id: "person", value: $userId) {
@@ -200,10 +202,10 @@ export const assignItem = (boardId, itemId, userId) => {
   const variables = {
     userId: JSON.stringify({ id: userId })
   };
-  return callMondayAPI(query, variables);
+  return callMondayAPI(userToken, query, variables);
 };
 
-export const getBoardIdByName = async (name): Promise<{ success: boolean, error?: string, id?: number }> => {
+export const getBoardIdByName = async (userToken, name): Promise<{ success: boolean, error?: string, id?: number }> => {
   const query = `
     query {
       boards {
@@ -212,7 +214,7 @@ export const getBoardIdByName = async (name): Promise<{ success: boolean, error?
       }
     }
   `;
-  const { success, error, data } = await callMondayAPI(query);
+  const { success, error, data } = await callMondayAPI(userToken, query);
   if (!success) {
     return {
       success,

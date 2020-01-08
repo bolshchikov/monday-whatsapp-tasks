@@ -10,6 +10,13 @@ Later on you can edit, fill description, owner and prioritize it whenever there'
 
 ## How to use
 
+### 0. Set user token
+In order to start working, you need to post your Personal API Token (V2). All calls to Monday API must be authenticated. **Nothing will work without it**.
+```
+Token
+<Enter your Monday token here>
+```
+
 ### 1. Identify current phone number with Monday user by email
 Associate your phone number with your user in Monday. Doing this allows you to assign tasks to your Monday user. Send a message in the following format:
 ```

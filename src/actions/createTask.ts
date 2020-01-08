@@ -7,14 +7,14 @@ const DEFAULT_BOARD_ID = 154509005;
 const GROUP_ID = '';
 
 
-export default db => async (payload: TwilioPayload, message: Message) => {
+export default db => async (userToken: string, payload: TwilioPayload, message: Message) => {
   console.log('creating new task');
   try {
     let boardId = DEFAULT_BOARD_ID;
     console.log(message);
 
     if (message && message.boardName !== undefined) {
-      const boardIdResponse = await monday.getBoardIdByName(message.boardName);
+      const boardIdResponse = await monday.getBoardIdByName(userToken, message.boardName);
       if (boardIdResponse.success) {
         boardId = boardIdResponse.id;
       } else {
@@ -22,6 +22,7 @@ export default db => async (payload: TwilioPayload, message: Message) => {
       }
     }
     const { id } = await monday.createItem(
+      userToken,
       message.userInput,
       boardId,
       GROUP_ID
@@ -31,6 +32,7 @@ export default db => async (payload: TwilioPayload, message: Message) => {
 
     if (userId) {
       const assignUserResponse = await monday.assignItem(
+        userToken,
         boardId,
         id,
         userId
