@@ -1,10 +1,12 @@
-const twilio = require('./twilio');
-const ACTIONS = require('../contants/actions');
-const createTaskImpl = require('../actions/createTask');
-const associateEmailImpl = require('../actions/associateEmail');
-const getUserUnfinishedTasksImpl = require('../actions/getUserUnfinishedTasks');
+import { reply } from './twilio';
+import Message from '../types/Message';
+import ACTIONS from '../types/Actions';
+import TwilioPayload from '../types/TwilioPayload';
+import createTaskImpl from '../actions/createTask';
+import associateEmailImpl from '../actions/associateEmail';
+import getUserUnfinishedTasksImpl from '../actions/getUserUnfinishedTasks';
 
-const parseMessage = (payload) => {
+const parseMessage = (payload: TwilioPayload): Message => {
   const body = payload['Body'];
   const [action, userInput, boardName, groupName] = body.split('\n');
   return {
@@ -22,7 +24,7 @@ module.exports = (queue, dbClient) => {
   const associateEmail = associateEmailImpl(db);
   const getUserUnfinishedTasks = getUserUnfinishedTasksImpl(db);
 
-  const process = (payload) => {
+  const process = (payload: TwilioPayload) => {
     const message = parseMessage(payload);
     switch (message.action.toLowerCase()) {
       case ACTIONS.NEW_TASK:
@@ -34,7 +36,7 @@ module.exports = (queue, dbClient) => {
       case ACTIONS.USER_UNFINISHED_TASKS_TODAY:
         return getUserUnfinishedTasks(payload, true);
       default:
-        return twilio.reply(payload, 'Action is not recognized.');
+        return reply(payload, 'Action is not recognized.');
     }
   };
 

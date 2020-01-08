@@ -1,20 +1,22 @@
-import * as twilio from '../services/twilio';
-import * as monday from '../services/monday';
+import Message from '../types/Message';
+import { reply } from '../services/twilio';
+import TwilioPayload from '../types/TwilioPayload';
+import { getUserIdByEmail } from '../services/monday';
 
-module.exports = db => async (payload, message) => {
+export default db => async (payload: TwilioPayload, message: Message) => {
   console.log('Associating email with the user');
   const userEmail = message['userInput'];
-  const mondayResponse = await monday.getUserIdByEmail(
+  const mondayResponse = await getUserIdByEmail(
     userEmail
   );
   if (!mondayResponse.success) {
     console.log(mondayResponse.error);
-    return twilio.reply(payload, `*Error*:\n${mondayResponse.error}`);
+    return reply(payload, `*Error*:\n${mondayResponse.error}`);
   }
   const from = payload['From'];
   const dbResponse = await db.setUserId(from, mondayResponse.id);
   if (!dbResponse.success) {
-    return twilio.reply(payload, `*Error*:\n${dbResponse.error}`);
+    return reply(payload, `*Error*:\n${dbResponse.error}`);
   }
-  return twilio.reply(payload, `Done`);
+  return reply(payload, `Done`);
 };

@@ -1,4 +1,4 @@
-module.exports = (dbClient) => {
+module.exports = dbClient => {
   const setUserId = (phoneNumber, userId) => dbClient.set(`${phoneNumber}:userId`, userId)
     .then(
       res => ({ success: res === 'OK' }),

@@ -3,7 +3,7 @@ const TwilioDriver = require('../drivers/twilio');
 const MondayDriver = require('../drivers/monday');
 const MessageBuilder = require('../builders/message');
 
-const ACTIONS = require('../../dist/contants/actions');
+const ACTIONS = require('../../dist/types/Actions').default;
 
 const TIMEOUT = 50;
 

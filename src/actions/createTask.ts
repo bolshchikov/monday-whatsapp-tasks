@@ -1,11 +1,13 @@
-import * as twilio from '../services/twilio';
+import { reply } from '../services/twilio';
 import * as monday from '../services/monday';
+import Message from '../types/Message';
+import TwilioPayload from '../types/TwilioPayload';
 
 const DEFAULT_BOARD_ID = 154509005;
 const GROUP_ID = '';
 
 
-module.exports = db => async (payload, message) => {
+export default db => async (payload: TwilioPayload, message: Message) => {
   console.log('creating new task');
   try {
     let boardId = DEFAULT_BOARD_ID;
@@ -37,9 +39,9 @@ module.exports = db => async (payload, message) => {
         throw new Error(assignUserResponse.error);
       }
     }
-    return twilio.reply(payload, `Done`);
+    return reply(payload, `Done`);
   } catch (error) {
     console.log(error);
-    return twilio.reply(payload, `*Error*:\n${error}`);
+    return reply(payload, `*Error*:\n${error}`);
   }
 };

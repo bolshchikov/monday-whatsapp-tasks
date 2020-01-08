@@ -1,7 +1,8 @@
-import * as twilio from '../services/twilio';
+import { reply } from '../services/twilio';
 import * as monday from '../services/monday';
+import TwilioPayload from '../types/TwilioPayload';
 
-module.exports = db => async (payload, isToday = false) => {
+export default db => async (payload: TwilioPayload, isToday = false) => {
   console.log('Get user unfinished tasks');
 
   const from = payload['From'];
@@ -9,7 +10,7 @@ module.exports = db => async (payload, isToday = false) => {
   const dbResponse = await db.getUserId(from);
   if (!dbResponse.success) {
     console.log(dbResponse.error);
-    return twilio.reply(payload, `*Error*:\n${dbResponse.error}`);
+    return reply(payload, `*Error*:\n${dbResponse.error}`);
   }
 
   const userId = dbResponse.userId;
@@ -19,10 +20,10 @@ module.exports = db => async (payload, isToday = false) => {
     : await monday.getUserUnfinishedTasks(userId);
 
   if (mondayResponse.success && mondayResponse.tasks.length === 0) {
-    return twilio.reply(payload, 'Yayy! You are all done for today!');
+    return reply(payload, 'Yayy! You are all done for today!');
   }
 
   const formattedMessage = mondayResponse.tasks.map(task => `◽ ${task.name}`).join('\n');
 
-  return twilio.reply(payload, formattedMessage);
+  return reply(payload, formattedMessage);
 };
