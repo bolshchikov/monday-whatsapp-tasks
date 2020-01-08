@@ -24,7 +24,7 @@ module.exports = db => async (payload, isToday = false) => {
   }
 
   if (mondayResponse.success && mondayResponse.tasks.length === 0) {
-    return twilio.reply(payload, 'Yayy! No unfinished tasks for you');
+    return twilio.reply(payload, 'Yayy! You are all done for today!');
   }
 
   const formattedMessage = mondayResponse.tasks.map(task => `◽ ${task.name}`).join('\n');
